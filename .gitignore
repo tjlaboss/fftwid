@@ -1,0 +1,14 @@
+# Compiled stuff
+*.o
+*.pyc
+*_cache
+
+# PyCharm configuration files
+.idea/*
+
+# tmp swp
+*~
+*.swp
+tmp_*
+
+
