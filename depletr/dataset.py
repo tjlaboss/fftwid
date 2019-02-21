@@ -1,13 +1,14 @@
 # Data Set
 
+from collections import OrderedDict
 from nuclides import Nuclide
 
 
 class DataSet:
 	def __init__(self, name):
 		self.name = name
-		self._nuclides = {}
-		self._q = {}  # quantities
+		self._nuclides = OrderedDict()
+		self._q = OrderedDict()  # quantities
 		self._built = False
 		
 	

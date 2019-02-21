@@ -1,4 +1,5 @@
 import scipy
+from . import elements
 
 
 class Nuclide:
@@ -23,6 +24,7 @@ class Nuclide:
 	def __init__(self, element, a):
 		element = element.title()
 		self.element = element
+		self.z = elements.Z[element]
 		self.a = a
 		self.name = element + str(a)
 		# Scattering physics
@@ -55,6 +57,27 @@ class Nuclide:
 	@property
 	def lambda_total(self):
 		return self._lambda_alpha + self._lambda_betam + self._lambda_betap
+	
+	def capture(self):
+		"""Get the daughter nuclide from a neutron capture"""
+		return self.element + str(self.a + 1)
+	
+	def decay_betap(self):
+		"""Get the daughter nuclide from a Beta+ decay"""
+		ep = elements.SYMBOL[self.z - 1]
+		return ep + str(self.a)
+	
+	def decay_betam(self):
+		"""Get the daughter nuclide from a Beta- decay"""
+		em = elements.SYMBOL[self.z + 1]
+		return em + str(self.a)
+	
+	def decay_alpha(self):
+		"""Get the daughter nuclide from an alpha decay"""
+		e = elements.SYMBOL[self.z - 2]
+		a = self.a - 4
+		return e + str(a)
+	
 	
 	'''
 	@property
