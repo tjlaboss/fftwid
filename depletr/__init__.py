@@ -1,1 +1,1 @@
-from .nuclide import Nuclide
+from .nuclides.nuclide import Nuclide

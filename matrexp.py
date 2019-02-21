@@ -1,14 +1,13 @@
 import scipy as sp
 import scipy.linalg as la
-
-
-from depletr.data import u235_t, u238_t, pu239_t
+import depletr
+from depletr.nuclides.thermal import u235, u238, pu239
 
 test_matrix = sp.array([
-# _from_   U235             U238            Pu239         | _to_
-	[ u235_t.sigma_a,               0,               0],  # U235
-	[              0,  u238_t.sigma_a,               0],  # U238
-	[              0, -u238_t.sigma_y, pu239_t.sigma_a]   # Pu239
+# _from_   U235             U238            Pu239        |_to_
+	[ u235.sigma_a,               0,               0],  # U235
+	[              0,  u238.sigma_a,               0],  # U238
+	[              0, -u238.sigma_y,   pu239.sigma_a]   # Pu239
 ], dtype=float)
 
 
@@ -31,9 +30,9 @@ if PLOT:
 	from pylab import *
 	pf = semilogy
 	#pf = plot
-	pf(num[0, :], label=u235_t.name)
-	pf(num[1, :], label=u238_t.name)
-	pf(num[2, :], label=pu239_t.name)
+	pf(num[0, :], label=u235.name)
+	pf(num[1, :], label=u238.name)
+	pf(num[2, :], label=pu239.name)
 	legend()
 	show()
 

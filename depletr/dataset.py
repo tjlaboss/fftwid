@@ -1,6 +1,6 @@
-# Spectral data
+# Data Set
 
-from . import Nuclide
+from nuclides import Nuclide
 
 
 class DataSet:
@@ -44,13 +44,3 @@ class DataSet:
 
 
 
-# Thermal Spectrum (PWR)
-u235_t = Nuclide('U', 235)
-u235_t.sigma_f = 388
-u235_t.sigma_y = 8.7
-u238_t = Nuclide('U', 238)
-u238_t.sigma_f = 0.103
-u238_t.sigma_y = 0.86
-pu239_t = Nuclide('Pu', 239)
-pu239_t.sigma_f = 102
-pu239_t.sigma_y = 58.7
