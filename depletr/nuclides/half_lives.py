@@ -14,7 +14,7 @@ YEAR = 365.25*DAY
 ALPHA = {
 	# Uranium
 	"U235"  : 703.8E6*YEAR,
-	"U239"  : 23.45*MINUTE,
+	"U236"  : 2.342E7*YEAR,
 	# Neptunium
 	"Np237" : 2.144E6*YEAR,
 	# Plutonium
@@ -36,7 +36,18 @@ ALPHA = {
 
 # Beta-
 BETAM = {
+	# Thorium
+	"Th233" : 22.3*MINUTE,
+	"Th244" : 24.1*DAY,
+	# Palladium
+	"Pa232" : 1.31*DAY,
+	"Pa233" : 26.975*DAY,
+	"Pa234" : 1.159*MINUTE/.9984,
+	# Uranium
+	"U237"  : 6.75*DAY,
+	"U239"  : 23.45*MINUTE,
 	# Neptunium
+	"Np236" : 22.5*HOUR/.5,
 	"Np238" : 2.117*DAY,
 	"Np239" : 2.365*DAY,
 	"Np240" : 7.22*MINUTE,
@@ -46,6 +57,8 @@ BETAM = {
 
 # Beta+ (and electron capture)
 BETAP = {
+	# Neptunium
+	"Np236" : 22.5*HOUR/.5,
 	# Americium
 	"Am242" : 16.02*HOUR/.173,
 }

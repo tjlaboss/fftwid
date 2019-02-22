@@ -1,6 +1,7 @@
 # Fast Spectrum
 
 from .nuclide import Nuclide
+from .half_lives import *
 
 
 ALL_NUCLIDES = []
@@ -79,3 +80,12 @@ cm245 = Nuclide('Cm', 245)
 cm245.sigma_f = 5.1
 cm245.sigma_y = 0.9
 ALL_NUCLIDES.append(cm245)
+
+for _nuclide in ALL_NUCLIDES:
+	_n = _nuclide.name
+	if _n in ALPHA:
+		_nuclide.lambda_alpha = LN2/ALPHA[_n]
+	if _n in BETAM:
+		_nuclide.lambda_betam = LN2/BETAM[_n]
+	if _n in BETAP:
+		_nuclide.lambda_betap = LN2/BETAP[_n]
