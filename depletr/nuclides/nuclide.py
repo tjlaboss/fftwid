@@ -41,6 +41,7 @@ class Nuclide:
 		self.lambda_alpha = 0  # alpha decay
 		self.lambda_betap = 0  # beta+ decay
 		self.lambda_betam = 0  # beta- decay
+		self._lambda_total = None
 	
 	@property
 	def alpha(self):
@@ -56,8 +57,21 @@ class Nuclide:
 	
 	@property
 	def lambda_total(self):
-		return self.lambda_alpha + self.lambda_betam + self.lambda_betap
+		if self._lambda_total is None:
+			return self.lambda_alpha + self.lambda_betam + self.lambda_betap
 	
+	@lambda_total.setter
+	def lambda_total(self, l):
+		self._lambda_total = l
+	
+	@property
+	def halflife(self):
+		return scipy.log(2)/self._lambda_total
+	
+	@halflife.setter
+	def halflife(self, t12):
+		self._lambda_total = scipy.log(2)/t12
+
 	def capture(self):
 		"""Get the daughter nuclide from a neutron capture"""
 		return self.element + str(self.a + 1)
@@ -78,14 +92,7 @@ class Nuclide:
 		a = self.a - 4
 		return e + str(a)
 	
-	
-	'''
-	@property
-	def halflife(self):
-		return scipy.log(2)/self._lambda
-	
-	@halflife.setter
-	def halflife(self, t12):
-		self._lambda = scipy.log(2)/t12
-	'''
-
+	def decay_gamma(self):
+		"""Get the daughter nuclide from internal conversion or gamma decay"""
+		if self.name[-1] == "m":
+			return self.name[:-1]
