@@ -38,9 +38,9 @@ class Nuclide:
 		self.sigma_y = 0  # capture
 		self.sigma_f = 0  # fission
 		# Decay
-		self._lambda_alpha = 0  # alpha decay
-		self._lambda_betap = 0  # beta+ decay
-		self._lambda_betam = 0  # beta- decay
+		self.lambda_alpha = 0  # alpha decay
+		self.lambda_betap = 0  # beta+ decay
+		self.lambda_betam = 0  # beta- decay
 	
 	@property
 	def alpha(self):
@@ -56,7 +56,7 @@ class Nuclide:
 	
 	@property
 	def lambda_total(self):
-		return self._lambda_alpha + self._lambda_betam + self._lambda_betap
+		return self.lambda_alpha + self.lambda_betam + self.lambda_betap
 	
 	def capture(self):
 		"""Get the daughter nuclide from a neutron capture"""
