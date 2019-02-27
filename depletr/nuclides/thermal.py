@@ -15,6 +15,8 @@ u238 = Nuclide('U', 238)
 u238.sigma_f = 0.103
 u238.sigma_y = 0.86
 ALL_NUCLIDES.append(u238)
+u239 = Nuclide('u', 239)
+ALL_NUCLIDES.append(u239)
 # Neptunium
 np237 = Nuclide('Np', 237)
 np237.sigma_f = 0.52
@@ -24,6 +26,8 @@ np238 = Nuclide('Np', 238)
 np238.sigma_f = 134
 np238.sigma_y = 13.6
 ALL_NUCLIDES.append(np238)
+np239 = Nuclide('Np', 239)
+ALL_NUCLIDES.append(np239)
 # Plutonium
 pu238 = Nuclide('Pu', 238)
 pu238.sigma_f = 2.4
