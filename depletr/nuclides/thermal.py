@@ -60,6 +60,7 @@ am242.sigma_y = 301
 ALL_NUCLIDES.append(am242)
 am242m = Nuclide('Am', 242)
 am242m.name += 'm'  # metastable
+am242m.latex += '$_m$'
 am242m.sigma_f = 595
 am242m.sigma_y = 137
 ALL_NUCLIDES.append(am242m)
