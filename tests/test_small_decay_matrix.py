@@ -17,25 +17,27 @@ def _get_l_matrix():
 
 def test_l_matrix_dimensions():
 	l = _get_l_matrix()
-	_assert("L matrix shape", l.shape, (4, 4))
+	test_result = l.shape
+	true_result = (4, 4)
+	_assert("L matrix shape", test_result, true_result)
 
 
 def test_am242m_lambda_total():
 	l = _get_l_matrix()
-	_assert("Americium 242 metastable lambda total",
-	        l[0, 0], am242m.lambda_total)
+	test_result = l[0, 0]
+	true_result = am242m.lambda_total
+	_assert("Americium 242 metastable lambda total", test_result, true_result)
 
 
 def test_am242m_lambda_gamma():
 	l = _get_l_matrix()
-	_assert("Americium 242 metastable lambda gamma",
-	        l[1, 0], -am242m.lambda_gamma)
+	test_result = l[1, 0]
+	true_result = -am242m.lambda_gamma
+	_assert("Americium 242 metastable lambda gamma", test_result, true_result)
 
 
 def test_lumped_actinide():
 	l = _get_l_matrix()
-	print(l)
-	beta_lam = am242.lambda_betap + am242.lambda_betam
-	_assert("Americium 242 lumped actinide product (beta decay)",
-	        l[-2, 1], -beta_lam)
-
+	test_result = l[-2, 1]
+	true_result = -(am242.lambda_betap + am242.lambda_betam)
+	_assert("Americium 242 lumped actinide product", test_result, true_result)
