@@ -2,7 +2,7 @@
 
 from collections import OrderedDict
 import scipy as sp
-import nuclides
+from . import nuclides
 
 
 class DataSet:
@@ -125,21 +125,3 @@ class DataSet:
 			vector[i] = nuclide.sigma_f
 		# Leave deadend actinidesa and fission products at 0.
 		return vector
-		
-
-if __name__ == "__main__":
-	st = DataSet("test set")
-	'''
-	from nuclides.thermal import u238, pu239, pu240
-	st.add_nuclides([u238, pu239, pu240], [.333]*3)
-	'''
-	from nuclides.thermal import ALL_NUCLIDES
-	quants = sp.ones(len(ALL_NUCLIDES))
-	st.add_nuclides(ALL_NUCLIDES, quants)
-	
-	matA, matL = st.build_matrix()
-	print(matA)
-	print(matL)
-	
-	
-

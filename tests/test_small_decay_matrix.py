@@ -1,14 +1,10 @@
-# Unit tests for populating the fission and decay matrices
+# Unit tests for populating the decay matrix
 
 
+from assert_test import assert_test as _assert
 import sys; sys.path.append('..')
 import depletr
 from depletr.nuclides.thermal import am242m, am242
-
-
-def _assert(name, test_result, true_result):
-	errstr = "{} test failed:\n{} != {}".format(name, test_result, true_result)
-	assert test_result == true_result, errstr
 
 
 def _get_l_matrix():

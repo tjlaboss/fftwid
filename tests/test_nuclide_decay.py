@@ -1,13 +1,9 @@
 # Unit tests for nuclide absorptions and ecays
 
 
+from assert_test import assert_test as _assert
 import sys; sys.path.append('..')
 from depletr.nuclides.thermal import np238, pu238, pu242, am242
-
-
-def _assert(name, test_result, true_result):
-	errstr = "{} test failed:\n{} != {}".format(name, test_result, true_result)
-	assert test_result == true_result, errstr
 
 
 def test_neutron_capture():
