@@ -46,5 +46,5 @@ def test_lumped_actinide():
 def test_lumped_fission_product():
 	a = _get_a_matrix()
 	test_result = a[-1, 0]
-	true_result = -u239.sigma_f
+	true_result = -u238.sigma_f
 	_assert("Uranium 238 fission", test_result, true_result)

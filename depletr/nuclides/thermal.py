@@ -8,7 +8,7 @@ ALL_NUCLIDES = []
 
 # Uranium
 u235 = Nuclide('U', 235)
-u235.sigma_f = 388
+u235.sigma_f = 38.8
 u235.sigma_y = 8.7
 ALL_NUCLIDES.append(u235)
 u238 = Nuclide('U', 238)
@@ -34,7 +34,7 @@ pu238.sigma_f = 2.4
 pu238.sigma_y = 27.7
 ALL_NUCLIDES.append(pu238)
 pu239 = Nuclide('Pu', 239)
-pu239.sigma_f = 102
+pu239.sigma_f = 102.2
 pu239.sigma_y = 58.7
 ALL_NUCLIDES.append(pu239)
 pu240 = Nuclide('Pu', 240)
