@@ -94,3 +94,5 @@ for _nuclide in ALL_NUCLIDES:
 		_nuclide.lambda_betam = LN2/BETAM[_n]
 	if _n in BETAP:
 		_nuclide.lambda_betap = LN2/BETAP[_n]
+	if _n in GAMMA:
+		_nuclide.lambda_gamma = LN2/GAMMA[_n]

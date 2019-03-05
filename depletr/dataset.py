@@ -6,8 +6,7 @@ import nuclides
 
 
 class DataSet:
-	def __init__(self, name):
-		self.name = name
+	def __init__(self):
 		self._nuclides = OrderedDict()
 		self._q = OrderedDict()  # quantities
 		self._size = None
@@ -77,7 +76,7 @@ class DataSet:
 				else:
 					print(warnstr.format("Beta-", daughter, nuclide.name))
 					j = indices[nuclides.DEADEND_ACTINIDE]
-				L[j, i] = -nuclide.lambda_betam
+				L[j, i] += -nuclide.lambda_betam
 			if nuclide.lambda_betap:
 				daughter = nuclide.decay_betap()
 				if daughter in self._nuclides:
@@ -85,15 +84,15 @@ class DataSet:
 				else:
 					print(warnstr.format("Beta+", daughter, nuclide.name))
 					j = indices[nuclides.DEADEND_ACTINIDE]
-				L[j, i] = -nuclide.lambda_betap
+				L[j, i] += -nuclide.lambda_betap
 			if nuclide.lambda_alpha:
 				daughter = nuclide.decay_alpha()
 				if daughter in self._nuclides:
 					j = indices[daughter]
 				else:
-					# Don't warn about alpha decay products
+					print(warnstr.format("alpha", daughter, nuclide.name))
 					j = indices[nuclides.DEADEND_ACTINIDE]
-				L[j, i] = -nuclide.lambda_alpha
+				L[j, i] += -nuclide.lambda_alpha
 			if nuclide.lambda_gamma:
 				# e.g. if it's Am-242m
 				daughter = nuclide.decay_gamma()
@@ -101,7 +100,7 @@ class DataSet:
 					j = indices[daughter]
 				else:
 					j = indices[nuclides.DEADEND_ACTINIDE]
-				L[j, i] = -nuclide.lambda_gamma
+				L[j, i] += -nuclide.lambda_gamma
 		
 		
 		self._built = True
