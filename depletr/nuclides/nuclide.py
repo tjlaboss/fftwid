@@ -1,5 +1,6 @@
 import scipy
 from . import elements
+from . import constants
 
 
 class Nuclide:
@@ -27,6 +28,7 @@ class Nuclide:
 		self.z = elements.Z[element]
 		self.a = a
 		self.name = element + str(a)
+		self.latex = "${{}}^{{{}}}${}".format(a, element)
 		# Scattering physics
 		self._alpha = ((a - 1)/(a + 1))**2
 		if a == 1:
@@ -38,9 +40,11 @@ class Nuclide:
 		self.sigma_y = 0  # capture
 		self.sigma_f = 0  # fission
 		# Decay
-		self._lambda_alpha = 0  # alpha decay
-		self._lambda_betap = 0  # beta+ decay
-		self._lambda_betam = 0  # beta- decay
+		self.lambda_alpha = 0  # alpha decay
+		self.lambda_betap = 0  # beta+ decay
+		self.lambda_betam = 0  # beta- decay
+		self.lambda_gamma = 0  # internal conversion
+		self._lambda_total = None
 	
 	@property
 	def alpha(self):
@@ -56,8 +60,22 @@ class Nuclide:
 	
 	@property
 	def lambda_total(self):
-		return self._lambda_alpha + self._lambda_betam + self._lambda_betap
+		if self._lambda_total is None:
+			return self.lambda_betam + self.lambda_betap + \
+			       self.lambda_alpha + self.lambda_gamma
 	
+	@lambda_total.setter
+	def lambda_total(self, l):
+		self._lambda_total = l
+	
+	@property
+	def halflife(self):
+		return scipy.log(2)/self._lambda_total
+	
+	@halflife.setter
+	def halflife(self, t12):
+		self._lambda_total = scipy.log(2)/t12
+
 	def capture(self):
 		"""Get the daughter nuclide from a neutron capture"""
 		return self.element + str(self.a + 1)
@@ -78,14 +96,29 @@ class Nuclide:
 		a = self.a - 4
 		return e + str(a)
 	
+	def decay_gamma(self):
+		"""Get the daughter nuclide from internal conversion or gamma decay"""
+		if self.name[-1] == "m":
+			return self.name[:-1]
 	
-	'''
-	@property
-	def halflife(self):
-		return scipy.log(2)/self._lambda
+	def fission(self):
+		if self.sigma_f:
+			return [constants.FISSION_PRODUCT]
 	
-	@halflife.setter
-	def halflife(self, t12):
-		self._lambda = scipy.log(2)/t12
-	'''
-
+	def get_all_daughters(self):
+		"""Nuclides, lock up your daughters
+		
+		Returns:
+		--------
+		daughters:  list of str; daughter nuclides from all possible decays
+		"""
+		daughters = []
+		if self.lambda_alpha:
+			daughters.append(self.decay_alpha())
+		if self.lambda_betam:
+			daughters.append(self.decay_betam())
+		if self.lambda_betap:
+			daughters.append(self.decay_betap())
+		if self.lambda_gamma:
+			daughters.append(self.decay_gamma())
+		return daughters

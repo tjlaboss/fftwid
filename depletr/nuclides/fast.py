@@ -1,6 +1,7 @@
 # Fast Spectrum
 
 from .nuclide import Nuclide
+from .half_lives import *
 
 
 ALL_NUCLIDES = []
@@ -14,6 +15,8 @@ u238 = Nuclide('U', 238)
 u238.sigma_f = 0.04
 u238.sigma_y = 0.30
 ALL_NUCLIDES.append(u238)
+u239 = Nuclide('u', 239)
+ALL_NUCLIDES.append(u239)
 # Neptunium
 np237 = Nuclide('Np', 237)
 np237.sigma_f = 0.32
@@ -23,6 +26,8 @@ np238 = Nuclide('Np', 238)
 np238.sigma_f = 3.6
 np238.sigma_y = 0.2
 ALL_NUCLIDES.append(np238)
+np239 = Nuclide('Np', 239)
+ALL_NUCLIDES.append(np239)
 # Plutonium
 pu238 = Nuclide('Pu', 238)
 pu238.sigma_f = 1.1
@@ -55,6 +60,7 @@ am242.sigma_y = 0.6
 ALL_NUCLIDES.append(am242)
 am242m = Nuclide('Am', 242)
 am242m.name += 'm'  # metastable
+am242m.latex += '$_m$'
 am242m.sigma_f = 3.3
 am242m.sigma_y = 0.6
 ALL_NUCLIDES.append(am242m)
@@ -79,3 +85,14 @@ cm245 = Nuclide('Cm', 245)
 cm245.sigma_f = 5.1
 cm245.sigma_y = 0.9
 ALL_NUCLIDES.append(cm245)
+
+for _nuclide in ALL_NUCLIDES:
+	_n = _nuclide.name
+	if _n in ALPHA:
+		_nuclide.lambda_alpha = LN2/ALPHA[_n]
+	if _n in BETAM:
+		_nuclide.lambda_betam = LN2/BETAM[_n]
+	if _n in BETAP:
+		_nuclide.lambda_betap = LN2/BETAP[_n]
+	if _n in GAMMA:
+		_nuclide.lambda_gamma = LN2/GAMMA[_n]

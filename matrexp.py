@@ -10,6 +10,11 @@ test_matrix = sp.array([
 	[              0, -u238.sigma_y,   pu239.sigma_a]   # Pu239
 ], dtype=float)
 
+test_lambda = sp.array([
+	[ u235.lambda_total,                 0,                  0],
+	[                 0, u238.lambda_total,                  0],
+	[                 0,                 0, pu239.lambda_total]
+], dtype=float)
 
 NSTEPS = 10
 num = sp.zeros((3, NSTEPS))
@@ -18,7 +23,7 @@ flux = 1
 dt = 0.1
 for k in range(NSTEPS):
 	t = dt*k
-	dn = la.expm(-test_matrix*flux*dt)
+	dn = la.expm(-(test_matrix*flux + test_lambda)*dt)
 	if k > 0:
 		num[:, k] = num[:, k-1].dot(dn)
 	print('time t:', t, '\n', num[:, k])

@@ -1,13 +1,9 @@
 # Unit tests for nuclide absorptions and ecays
 
 
+from assert_test import assert_test as _assert
 import sys; sys.path.append('..')
-from depletr.nuclides.thermal import np238, pu238, pu242, am242
-
-
-def _assert(name, test_result, true_result):
-	errstr = "{} test failed:\n{} != {}".format(name, test_result, true_result)
-	assert test_result == true_result, errstr
+from depletr.nuclides.thermal import np238, pu238, pu242, am242, am242m
 
 
 def test_neutron_capture():
@@ -33,3 +29,8 @@ def test_betam_decay():
 	true_result = "Np238(n, e-)Pu238"
 	_assert("Beta- decay", test_result, true_result)
 	
+
+def test_gamma_decay():
+	test_result = '{}(*, y){}'.format(am242m.name, am242m.decay_gamma())
+	true_result = "Am242m(*, y)Am242"
+	_assert("Internal conversion", test_result, true_result)
