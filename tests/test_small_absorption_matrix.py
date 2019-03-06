@@ -24,7 +24,7 @@ def test_a_matrix_dimensions():
 
 def test_u239_capture():
 	a = _get_a_matrix()
-	test_result = a[1, 0]
+	test_result = a[0, 1]
 	true_result = -u238.sigma_y
 	_assert("Uranium 238 -> Uranium 239", test_result, true_result)
 
@@ -38,13 +38,13 @@ def test_u238_absorption():
 
 def test_lumped_actinide():
 	a = _get_a_matrix()
-	test_result = a[-2, -1]
+	test_result = a[-1, -2]
 	true_result = -u239.sigma_y
 	_assert("Uranium 239 capture", test_result, true_result)
 
 
 def test_lumped_fission_product():
 	a = _get_a_matrix()
-	test_result = a[-1, 0]
-	true_result = -u239.sigma_f
+	test_result = a[0, -1]
+	true_result = -u238.sigma_f
 	_assert("Uranium 238 fission", test_result, true_result)

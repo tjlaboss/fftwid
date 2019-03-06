@@ -31,13 +31,13 @@ def test_am242m_lambda_total():
 
 def test_am242m_lambda_gamma():
 	l = _get_l_matrix()
-	test_result = l[1, 0]
+	test_result = l[0, 1]
 	true_result = -am242m.lambda_gamma
 	_assert("Americium 242 metastable lambda gamma", test_result, true_result)
 
 
 def test_lumped_actinide():
 	l = _get_l_matrix()
-	test_result = l[-2, 1]
+	test_result = l[1, -2]
 	true_result = -(am242.lambda_betap + am242.lambda_betam)
 	_assert("Americium 242 lumped actinide product", test_result, true_result)
