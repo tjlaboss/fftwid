@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from depletr.fuel import wt_to_at_uranium
-from nuclides.half_lives import MINUTE, HOUR, DAY, MONTH, YEAR
+from .nuclides.half_lives import MINUTE, HOUR, DAY, MONTH, YEAR
 
 UCOLOR = "darkgoldenrod"  # because of the name
 FLUXCOLOR = (0.35, 0.35, 0.35)  # Dark gray

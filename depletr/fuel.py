@@ -3,7 +3,7 @@
 
 import scipy
 from scipy.constants import eV
-from nuclides.half_lives import DAY
+from .nuclides.half_lives import DAY
 
 
 ELEMENTS = ("U", "Pu", "Uranium", "Plutonium")
