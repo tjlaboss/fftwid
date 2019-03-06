@@ -26,6 +26,10 @@ class Depleter:
 			"Spectrum must be one of: {}".format(tuple(SPECTRA.keys()))
 		self.data = SPECTRA[spectrum]
 		self._scale = mass*N_A/238*1E-24
+	
+	
+	def get_all_nuclides(self):
+		return self.data.ALL_NUCLIDES
 
 
 	def deplete(self, nsteps, plots=1):
@@ -66,7 +70,7 @@ class Depleter:
 			kinfvals[k] = (ck*nufv).sum()/(ck*absv).sum()
 		
 		mass_reduct_238 = (concentrations[1, -1] - c0[1])/c0[1]
-		print("U235 mass change: {:5.2%}".format(mass_reduct_238))
+		print("U238 mass change: {:5.2%}".format(mass_reduct_238))
 		mass_reduct_235 = (concentrations[0, -1] - c0[0])/c0[0]
 		print("U235 mass change: {:5.2%}".format(mass_reduct_235))
 		est235 = fuel.at_to_wt_uranium(enrichvals[-1])
@@ -86,7 +90,8 @@ class Depleter:
 				axk = plt.figure().add_subplot(111)
 				axu = plt.figure().add_subplot(111)
 			# Top left: Actinide depletion
-			plotter.make_actinides_plot(tvals, concentrations, self.data.ALL_NUCLIDES, axa)
+			plotter.make_actinides_plot(tvals, concentrations, self.data.ALL_NUCLIDES, axa,
+			                            fission_products=True, deadend_actinides=True)
 			# Top Right: Enrichment and flux
 			plotter.make_enrichment_flux_plot(tvals, enrichvals, fluxvals, axf)
 			# Bottom left: Approximate k-infinity
@@ -100,6 +105,8 @@ class Depleter:
 				# Hide redundant xlabels to avoi crowding
 				axa.set_xlabel("")
 				axf.set_xlabel("")
+		
+		return concentrations[:, -1]
 	
 	def show(self):
 		return plt.show()

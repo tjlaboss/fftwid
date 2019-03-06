@@ -46,7 +46,7 @@ def make_actinides_plot(tvals, num, all_nuclides, ax=None, unit="day",
 	if deadend_actinides:
 		plot_f(tvals, num[-2], ':', label="other")
 	if fission_products:
-		plot_f(tvals, num[-1], '-', label="PRODUCT")
+		plot_f(tvals, num[-1], ':', label="fission\nproducts")
 	ax.set_xlabel(tstr)
 	ax.grid(True, which="both", ls="-")
 	ax.set_xlim(tvals[0], tvals[-1])
