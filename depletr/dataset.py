@@ -117,10 +117,24 @@ class DataSet:
 			return sp.array(vals)
 	
 	
-	def build_fission_vector(self):
+	def build_xs_vector(self, rxn):
 		assert self._built, "You must finalize the depletion matrix first."
 		vector = sp.zeros(self._size)
 		for i, nuclide in enumerate(self._nuclides.values()):
-			vector[i] = nuclide.sigma_f
+			if rxn == "fission":
+				xs = nuclide.sigma_f
+			elif rxn == "nu-fission":
+				xs = nuclide.nu_sigma_f
+			elif rxn == "absorption":
+				xs = nuclide.sigma_a
+			elif rxn == "capture":
+				xs = nuclide.sigma_y
+			else:
+				raise NotImplementedError(xs)
+			vector[i] = xs
 		# Leave deadend actinides and fission products at 0.
 		return vector
+	
+	
+	def build_fission_vector(self):
+		return self.build_xs_vector("fission")

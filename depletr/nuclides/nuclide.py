@@ -39,12 +39,16 @@ class Nuclide:
 		self.sigma_n = 0  # scatter
 		self.sigma_y = 0  # capture
 		self.sigma_f = 0  # fission
+		self.nu = 0       # neutrons/fission
 		# Decay
 		self.lambda_alpha = 0  # alpha decay
 		self.lambda_betap = 0  # beta+ decay
 		self.lambda_betam = 0  # beta- decay
 		self.lambda_gamma = 0  # internal conversion
 		self._lambda_total = None
+		
+	def __str__(self):
+		return "Nuclide: {} (kinf = {:5.2f})".format(self.name, self.kinf)
 	
 	@property
 	def alpha(self):
@@ -55,8 +59,16 @@ class Nuclide:
 		return self._xi
 	
 	@property
+	def nu_sigma_f(self):
+		return self.nu*self.sigma_f
+	
+	@property
 	def sigma_a(self):
 		return self.sigma_f + self.sigma_y
+	
+	@property
+	def kinf(self):
+		return self.nu_sigma_f / self.sigma_a if self.sigma_a else 0
 	
 	@property
 	def lambda_total(self):
