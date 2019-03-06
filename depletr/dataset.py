@@ -56,16 +56,15 @@ class DataSet:
 			daughter = nuclide.capture()
 			if daughter in self._nuclides:
 				j = indices[daughter]
-				A[j, i] = -nuclide.sigma_y
+				A[i, j] = -nuclide.sigma_y
 			elif nuclide.sigma_y:
 				print(warnstr.format("capture", daughter, nuclide.name))
+				j = indices[nuclides.DEADEND_ACTINIDE]
+				A[i, j] = -nuclide.sigma_y
 			# ...and the fission products.
 			if nuclide.sigma_f:
-				products = nuclide.fission()
-				for daughter in products:
-					if daughter in self._nuclides:
-						j = indices[daughter]
-						A[j, i] = -nuclide.sigma_f
+				j = indices[nuclides.FISSION_PRODUCT]
+				A[i, j] = -nuclide.sigma_f
 			
 			# Populate the decay matrix with the lambdas
 			L[i, i] = nuclide.lambda_total
@@ -76,7 +75,7 @@ class DataSet:
 				else:
 					print(warnstr.format("Beta-", daughter, nuclide.name))
 					j = indices[nuclides.DEADEND_ACTINIDE]
-				L[j, i] += -nuclide.lambda_betam
+				L[i, j] += -nuclide.lambda_betam
 			if nuclide.lambda_betap:
 				daughter = nuclide.decay_betap()
 				if daughter in self._nuclides:
@@ -84,7 +83,7 @@ class DataSet:
 				else:
 					print(warnstr.format("Beta+", daughter, nuclide.name))
 					j = indices[nuclides.DEADEND_ACTINIDE]
-				L[j, i] += -nuclide.lambda_betap
+				L[i, j] += -nuclide.lambda_betap
 			if nuclide.lambda_alpha:
 				daughter = nuclide.decay_alpha()
 				if daughter in self._nuclides:
@@ -92,7 +91,7 @@ class DataSet:
 				else:
 					print(warnstr.format("alpha", daughter, nuclide.name))
 					j = indices[nuclides.DEADEND_ACTINIDE]
-				L[j, i] += -nuclide.lambda_alpha
+				L[i, j] += -nuclide.lambda_alpha
 			if nuclide.lambda_gamma:
 				# e.g. if it's Am-242m
 				daughter = nuclide.decay_gamma()
@@ -100,7 +99,7 @@ class DataSet:
 					j = indices[daughter]
 				else:
 					j = indices[nuclides.DEADEND_ACTINIDE]
-				L[j, i] += -nuclide.lambda_gamma
+				L[i, j] += -nuclide.lambda_gamma
 		
 		
 		self._built = True
@@ -123,5 +122,5 @@ class DataSet:
 		vector = sp.zeros(self._size)
 		for i, nuclide in enumerate(self._nuclides.values()):
 			vector[i] = nuclide.sigma_f
-		# Leave deadend actinidesa and fission products at 0.
+		# Leave deadend actinides and fission products at 0.
 		return vector
