@@ -10,10 +10,12 @@ ALL_NUCLIDES = []
 u235 = Nuclide('U', 235)
 u235.sigma_f = 1.98
 u235.sigma_y = 0.57
+u235.nu = 2.6
 ALL_NUCLIDES.append(u235)
 u238 = Nuclide('U', 238)
 u238.sigma_f = 0.04
 u238.sigma_y = 0.30
+u238.nu = 2.6
 ALL_NUCLIDES.append(u238)
 u239 = Nuclide('u', 239)
 ALL_NUCLIDES.append(u239)
@@ -36,6 +38,7 @@ ALL_NUCLIDES.append(pu238)
 pu239 = Nuclide('Pu', 239)
 pu239.sigma_f = 1.86
 pu239.sigma_y = 0.56
+pu239.nu = 3.1
 ALL_NUCLIDES.append(pu239)
 pu240 = Nuclide('Pu', 240)
 pu240.sigma_f = 0.36
