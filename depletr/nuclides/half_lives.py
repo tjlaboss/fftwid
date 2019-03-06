@@ -9,6 +9,7 @@ MINUTE = 60
 HOUR = 3600
 DAY = 24*HOUR
 YEAR = 365.25*DAY
+MONTH = YEAR / 12
 
 # Alpha decay
 ALPHA = {

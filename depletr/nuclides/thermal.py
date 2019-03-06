@@ -3,13 +3,14 @@
 from .nuclide import Nuclide
 from .half_lives import *
 
-
+NU = 2.5
 ALL_NUCLIDES = []
 
 # Uranium
 u235 = Nuclide('U', 235)
 u235.sigma_f = 38.8
 u235.sigma_y = 8.7
+u235.nu = 2.4
 ALL_NUCLIDES.append(u235)
 u238 = Nuclide('U', 238)
 u238.sigma_f = 0.103
@@ -36,6 +37,7 @@ ALL_NUCLIDES.append(pu238)
 pu239 = Nuclide('Pu', 239)
 pu239.sigma_f = 102.2
 pu239.sigma_y = 58.7
+pu239.nu = 2.9
 ALL_NUCLIDES.append(pu239)
 pu240 = Nuclide('Pu', 240)
 pu240.sigma_f = 0.53
@@ -96,3 +98,5 @@ for _nuclide in ALL_NUCLIDES:
 		_nuclide.lambda_betap = LN2/BETAP[_n]
 	if _n in GAMMA:
 		_nuclide.lambda_gamma = LN2/GAMMA[_n]
+	if _nuclide.sigma_f and not _nuclide.nu:
+		_nuclide.nu = NU
