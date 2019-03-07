@@ -125,7 +125,7 @@ class Depleter:
 		nc = len(c0)
 		results = sp.zeros((nc, nt + 1))
 		results[:, 0] = c0
-		concentrations = sp.zeros((nc, nt*nsteps))
+		concentrations = sp.zeros((nc, nt*nsteps + 1))
 		concentrations[:, 0] = c0
 		elapsed = 0
 		i = 0
@@ -134,11 +134,10 @@ class Depleter:
 			for k in range(nsteps):
 				elapsed += dt
 				dn = matrexp(-l*dt)
-				if i > 0:
-					concentrations[:, i] = concentrations[:, i-1].dot(dn)
+				concentrations[:, i+1] = concentrations[:, i].dot(dn)
 			print("did interval at dt =", dt)
 			print("elapsed:", elapsed)
-			results[:, interval + 1] = concentrations[:, i]
+			results[:, interval + 1] = concentrations[:, i+1]
 			i += 1
 		
 		return results

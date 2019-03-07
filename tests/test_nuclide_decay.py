@@ -1,4 +1,4 @@
-# Unit tests for nuclide absorptions and ecays
+# Unit tests for nuclide absorptions and decays
 
 
 from assert_test import assert_test as _assert
