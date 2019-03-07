@@ -56,6 +56,7 @@ ALL_NUCLIDES.append(pu242)
 am241 = Nuclide('Am', 241)
 am241.sigma_f = 0.27
 am241.sigma_y = 2.0
+am241.metastable_branch_ratio = 0.11
 ALL_NUCLIDES.append(am241)
 am242 = Nuclide('Am', 242)
 am242.sigma_f = 3.2

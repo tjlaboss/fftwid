@@ -22,7 +22,6 @@ ALPHA = {
 	"Pu238" : 87.7*YEAR,
 	"Pu239" : 24110*YEAR,
 	"Pu240" : 6561*YEAR,
-	"Pu241" : 14.29*YEAR,
 	"Pu242" : 3.73E5*YEAR,
 	# Americium
 	"Am241" : 432.6*YEAR,
@@ -52,6 +51,8 @@ BETAM = {
 	"Np238" : 2.117*DAY,
 	"Np239" : 2.365*DAY,
 	"Np240" : 7.22*MINUTE,
+	# Plutonium
+	"Pu241" : 14.29*YEAR,
 	# Americium
 	"Am242" : 16.02*HOUR/.872,
 }

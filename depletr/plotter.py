@@ -34,11 +34,13 @@ def make_actinides_plot(tvals, num, all_nuclides, ax=None, unit="day",
 	ax = _get_axis(ax)
 	tvals, tstr = _get_t_in_unit(tvals, unit)
 	plot_f = {"semilogy": ax.semilogy,
-	          "semilogx": ax.semilogy,
+	          "semilogx": ax.semilogx,
 	          "loglog"  : ax.loglog,
 	          "plot"    : ax.plot}[plot_type]
 	# Actinides
 	for i, nuclide in enumerate(all_nuclides):
+		if not num[i].any():
+			continue
 		if i == 0:
 			plot_f(tvals, num[i], color=UCOLOR, linewidth=2, label=nuclide.latex)
 		else:
@@ -98,7 +100,7 @@ def make_element_depletion_plot(tvals, list_of_arrays, list_of_nuclides, ax=None
 		return ax
 
 	for i, nuclide in enumerate(list_of_nuclides):
-		nucvals = list_of_arrays[i]
+		nucvals = np.array(list_of_arrays[i])
 		if relative:
 			nucvals /= nucvals[0]
 		color = UCOLOR if i == 0 else None
