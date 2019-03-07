@@ -35,6 +35,7 @@ class Nuclide:
 			self._xi = 1
 		else:
 			self._xi = 1 + (self.alpha*scipy.log(self.alpha))/(1 - self.alpha)
+		self.metastable_branch_ratio = 0
 		# Cross sections
 		self.sigma_n = 0  # scatter
 		self.sigma_y = 0  # capture
@@ -89,8 +90,11 @@ class Nuclide:
 		self._lambda_total = scipy.log(2)/t12
 
 	def capture(self):
-		"""Get the daughter nuclide from a neutron capture"""
-		return self.element + str(self.a + 1)
+		"""Get the daughter nuclides from a neutron capture"""
+		daughter = self.element + str(self.a + 1)
+		state0 = (daughter, 1 - self.metastable_branch_ratio)
+		statem = (daughter + 'm', self.metastable_branch_ratio)
+		return state0, statem
 	
 	def decay_betap(self):
 		"""Get the daughter nuclide from a Beta+ decay"""

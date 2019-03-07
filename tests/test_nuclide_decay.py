@@ -3,13 +3,28 @@
 
 from assert_test import assert_test as _assert
 import sys; sys.path.append('..')
-from depletr.nuclides.thermal import np238, pu238, pu242, am242, am242m
+from depletr.nuclides.thermal import np238, pu238, pu242, am241, am242, am242m
 
 
 def test_neutron_capture():
-	test_result = '{}(n, y){}'.format(pu238.name, pu238.capture())
+	branches = pu238.capture()
+	daughter, ratio = branches[0]
+	test_result = '{}(n, y){}'.format(pu238.name, daughter)
 	true_result = "Pu238(n, y)Pu239"
 	_assert("Neutron capture", test_result, true_result)
+
+
+def test_branching_ratio():
+	branches = am241.capture()
+	daughter0, ratio0 = branches[0]
+	test_result0 = '{}(n, y){}{}'.format(am241.name, ratio0, daughter0)
+	true_result0 = "Am241(n, y)0.89Am242"
+	_assert("Am241 branch (main)", test_result0, true_result0)
+	branchm = branches[-1]
+	daughterm, ratiom = branchm
+	test_resultm = '{}(n, y){}{}'.format(am241.name, ratiom, daughterm)
+	true_resultm = "Am241(n, y)0.11Am242m"
+	_assert("Am241 branch (metastable)", test_resultm, true_resultm)
 
 
 def test_alpha_decay():

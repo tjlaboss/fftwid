@@ -53,14 +53,16 @@ class DataSet:
 			# Populate the diagonal with the absorption xs
 			A[i, i] = nuclide.sigma_a
 			# Include the capture daughters...
-			daughter = nuclide.capture()
-			if daughter in self._nuclides:
-				j = indices[daughter]
-				A[i, j] = -nuclide.sigma_y
-			elif nuclide.sigma_y:
-				print(warnstr.format("capture", daughter, nuclide.name))
-				j = indices[nuclides.DEADEND_ACTINIDE]
-				A[i, j] = -nuclide.sigma_y
+			for daughter, branch_ratio in nuclide.capture():
+				if not branch_ratio:
+					continue
+				if daughter in self._nuclides:
+					j = indices[daughter]
+					A[i, j] = -nuclide.sigma_y*branch_ratio
+				elif nuclide.sigma_y:
+					print(warnstr.format("capture", daughter, nuclide.name))
+					j = indices[nuclides.DEADEND_ACTINIDE]
+					A[i, j] = -nuclide.sigma_y*branch_ratio
 			# ...and the fission products.
 			if nuclide.sigma_f:
 				j = indices[nuclides.FISSION_PRODUCT]
