@@ -30,6 +30,10 @@ class Depleter:
 	
 	def get_all_nuclides(self):
 		return self.data.ALL_NUCLIDES
+	
+	
+	def get_all_nuclide_names(self):
+		return [n.name for n in self.data.ALL_NUCLIDES]
 
 
 	def deplete(self, nsteps, plots=1):
@@ -107,6 +111,38 @@ class Depleter:
 				axf.set_xlabel("")
 		
 		return concentrations[:, -1]
+	
+	
+	def decay(self, quantities, nsteps, times):
+		ds = DataSet()
+		ds.add_nuclides(self.data.ALL_NUCLIDES, quantities[:-2])
+		l = ds.build_matrix()[1]
+		# Ignore fission products
+		l = l[:-1, :-1]
+		c0 = quantities[:-1]
+		# Deplete over the intervals of interest with nsteps each
+		nt = len(times)
+		nc = len(c0)
+		results = sp.zeros((nc, nt + 1))
+		results[:, 0] = c0
+		concentrations = sp.zeros((nc, nt*nsteps))
+		concentrations[:, 0] = c0
+		elapsed = 0
+		i = 0
+		for interval, time in enumerate(times):
+			dt = (time - elapsed)/nsteps
+			for k in range(nsteps):
+				elapsed += dt
+				dn = matrexp(-l*dt)
+				if i > 0:
+					concentrations[:, i] = concentrations[:, i-1].dot(dn)
+			print("did interval at dt =", dt)
+			print("elapsed:", elapsed)
+			results[:, interval + 1] = concentrations[:, i]
+			i += 1
+		
+		return results
+	
 	
 	def show(self):
 		return plt.show()
