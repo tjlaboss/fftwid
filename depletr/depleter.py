@@ -135,8 +135,6 @@ class Depleter:
 				elapsed += dt
 				dn = matrexp(-l*dt)
 				concentrations[:, i+1] = concentrations[:, i].dot(dn)
-			print("did interval at dt =", dt)
-			print("elapsed:", elapsed)
 			results[:, interval + 1] = concentrations[:, i+1]
 			i += 1
 		
