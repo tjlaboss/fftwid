@@ -34,30 +34,20 @@ class Depleter:
 	
 	def get_all_nuclide_names(self):
 		return [n.name for n in self.data.ALL_NUCLIDES]
-
-
-	def deplete(self, nsteps, plots=1):
-		power_megawatt = self.power*self.mass*1E-6
-		fission_rate = fuel.get_fission_rate(power_megawatt)
-		quantities = fuel.give_me_fuel(self.fuel_type, self.enrichment,
-		                               len(self.data.ALL_NUCLIDES))
-		time = fuel.give_me_fire(self.power, self.max_burnup)
-		dt = time/nsteps
-		
-		ds = DataSet()
-		ds.add_nuclides(self.data.ALL_NUCLIDES, quantities)
-		m, l = ds.build_matrix()
-		fv = ds.build_fission_vector()
-		absv = ds.build_xs_vector(rxn="absorption")
-		nufv = ds.build_xs_vector(rxn="nu-fission")
-		
+	
+	def _deplete(self, nsteps, dt, ds, c0, fission_rate):
+		m = ds.m
+		l = ds.l
 		kinfvals = sp.zeros(nsteps)
 		fluxvals = sp.zeros(nsteps)
 		enrichvals = sp.zeros(nsteps)
 		concentrations = sp.zeros((ds.size, nsteps))
 		enrichvals[0] = self.enrichment
-		c0 = ds.get_initial_quantities()*self._scale
+		
 		concentrations[:, 0] = c0
+		fv = ds.get_fission_vector()
+		nufv = ds.get_xs_vector("absorption")
+		absv = ds.get_xs_vector("nu-fission")
 		fission_xs = (c0*fv).sum()
 		flux = fission_rate/fission_xs
 		
@@ -65,7 +55,7 @@ class Depleter:
 			a = m*flux + l
 			dn = matrexp(-a*dt)
 			if k > 0:
-				concentrations[:, k] = concentrations[:, k-1].dot(dn)
+				concentrations[:, k] = concentrations[:, k - 1].dot(dn)
 				enrichvals[k] = concentrations[0, k]/(concentrations[0, k] + concentrations[1, k])
 			ck = concentrations[:, k]
 			fission_xs = (ck*fv).sum()
@@ -79,6 +69,23 @@ class Depleter:
 		print("U235 mass change: {:5.2%}".format(mass_reduct_235))
 		est235 = fuel.at_to_wt_uranium(enrichvals[-1])
 		print("Final enrichment estimate: {:5.2%}".format(est235))
+		return concentrations, kinfvals, fluxvals, enrichvals
+
+	
+	def deplete_fresh(self, nsteps, plots=1):
+		power_megawatt = self.power*self.mass*1E-6
+		fission_rate = fuel.get_fission_rate(power_megawatt)
+		quantities = fuel.give_me_fuel(self.fuel_type, self.enrichment,
+		                               len(self.data.ALL_NUCLIDES))
+		time = fuel.give_me_fire(self.power, self.max_burnup)
+		dt = time/nsteps
+		
+		ds = DataSet()
+		ds.add_nuclides(self.data.ALL_NUCLIDES, quantities)
+		ds.build()
+		c0 = ds.get_initial_quantities()*self._scale
+		
+		concs, kinf, flux, enrich = self._deplete(nsteps, dt, ds, c0, fission_rate)
 		
 		if plots:
 			tvals = sp.arange(0, nsteps*dt, dt)
@@ -94,31 +101,31 @@ class Depleter:
 				axk = plt.figure().add_subplot(111)
 				axu = plt.figure().add_subplot(111)
 			# Top left: Actinide depletion
-			plotter.make_actinides_plot(tvals, concentrations, self.data.ALL_NUCLIDES, axa,
+			plotter.make_actinides_plot(tvals, concs, self.data.ALL_NUCLIDES, axa,
 			                            fission_products=True, deadend_actinides=True)
 			# Top Right: Enrichment and flux
-			plotter.make_enrichment_flux_plot(tvals, enrichvals, fluxvals, axf)
+			plotter.make_enrichment_flux_plot(tvals, enrich, flux, axf)
 			# Bottom left: Approximate k-infinity
-			plotter.make_kinf_plot(tvals, kinfvals, axk)
+			plotter.make_kinf_plot(tvals, kinf, axk)
 			# Bottom Right: Relative uranium depletion
-			cvals = concentrations[0:2]
+			cvals = concs[0:2]
 			nucs = (self.data.u235, self.data.u238)
 			plotter.make_element_depletion_plot(tvals, cvals, nucs, axu,
 			                                    relative=True, element="Uranium")
 			if plots == 1:
-				# Hide redundant xlabels to avoi crowding
+				# Hide redundant xlabels to avoid crowding
 				axa.set_xlabel("")
 				axf.set_xlabel("")
 		
-		return concentrations[:, -1]
+		return concs[:, -1]
 	
 	
 	def decay(self, quantities, nsteps, times):
 		ds = DataSet()
 		ds.add_nuclides(self.data.ALL_NUCLIDES, quantities[:-2])
-		l = ds.build_matrix()[1]
+		ds.build()
 		# Ignore fission products
-		l = l[:-1, :-1]
+		l = ds.l[:-1, :-1]
 		c0 = quantities[:-1]
 		# Deplete over the intervals of interest with nsteps each
 		nt = len(times)
