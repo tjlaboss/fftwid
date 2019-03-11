@@ -26,6 +26,7 @@ class Depleter:
 			"Spectrum must be one of: {}".format(tuple(SPECTRA.keys()))
 		self.data = SPECTRA[spectrum]
 		self._scale = mass*N_A/238*1E-24
+		self._last_dataset = None
 	
 	
 	def get_all_nuclides(self):
@@ -34,6 +35,7 @@ class Depleter:
 	
 	def get_all_nuclide_names(self):
 		return [n.name for n in self.data.ALL_NUCLIDES]
+	
 	
 	def _deplete(self, nsteps, dt, ds, c0, fission_rate):
 		m = ds.m
@@ -46,16 +48,16 @@ class Depleter:
 		
 		concentrations[:, 0] = c0
 		fv = ds.get_fission_vector()
-		nufv = ds.get_xs_vector("absorption")
-		absv = ds.get_xs_vector("nu-fission")
+		nufv = ds.get_xs_vector("nu-fission")
+		absv = ds.get_xs_vector("absorption")
 		fission_xs = (c0*fv).sum()
 		flux = fission_rate/fission_xs
 		
 		for k in range(nsteps):
-			a = m*flux + l
-			dn = matrexp(-a*dt)
 			if k > 0:
-				concentrations[:, k] = concentrations[:, k - 1].dot(dn)
+				a = m*flux + l
+				dn = matrexp(-a*dt)
+				concentrations[:, k] = concentrations[:, k-1].dot(dn)
 				enrichvals[k] = concentrations[0, k]/(concentrations[0, k] + concentrations[1, k])
 			ck = concentrations[:, k]
 			fission_xs = (ck*fv).sum()
@@ -117,6 +119,7 @@ class Depleter:
 				axa.set_xlabel("")
 				axf.set_xlabel("")
 		
+		self._last_dataset = ds
 		return concs[:, -1]
 	
 	
