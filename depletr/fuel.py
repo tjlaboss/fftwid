@@ -2,8 +2,10 @@
 
 
 import scipy
+from scipy.optimize import fsolve
 from scipy.constants import eV
 from .nuclides.half_lives import DAY
+from .nuclides.constants import NATURAL_U235
 
 
 ELEMENTS = ("U", "Pu", "Uranium", "Plutonium")
@@ -54,3 +56,32 @@ def at_to_wt_uranium(at235):
 
 def wt_to_at_plutonium(wt239):
 	return NotImplementedError("Plutonium fuel")
+
+
+def at_to_wt_arbitrary(list_of_nuclides, list_of_ats):
+	num = len(list_of_ats)
+	total_at = sum(list_of_ats)
+	list_of_wts = scipy.zeros(num)
+	for i, (nuc, at) in enumerate(zip(list_of_nuclides, list_of_ats)):
+		list_of_wts[i] = nuc.a*at/total_at
+	list_of_wts /= list_of_wts.sum()
+	return list_of_wts
+
+
+def kinf_mox(n, actinide_dict, data, enrichment=NATURAL_U235):
+	nat235 = wt_to_at_uranium(enrichment)
+	nu_fission = 0
+	absorption = 0
+	for nuc, q in actinide_dict.items():
+		nu_fission += n*q*nuc.nu_sigma_f
+		absorption += n*q*nuc.sigma_a
+	nu_fission += (1 - n)*nat235*data.u235.nu_sigma_f
+	absorption += (1 - n)*nat235*data.u235.sigma_a
+	nu_fission += (1 - n)*(1 - nat235)*data.u238.nu_sigma_f
+	absorption += (1 - n)*(1 - nat235)*data.u238.sigma_a
+	return nu_fission/absorption
+
+
+def solve_kinf_mox_for_n(target_kinf, actinide_dict, data, enrichment=NATURAL_U235, nguess=0.15):
+	for_n = lambda n: kinf_mox(n, actinide_dict, data, enrichment) - target_kinf
+	return fsolve(for_n, nguess)[0]

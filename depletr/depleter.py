@@ -123,6 +123,22 @@ class Depleter:
 		return concs[:, -1]
 	
 	
+	def reprocess(self, quantities, which_elements, mox_frac):
+		all_nuclides = self.get_all_nuclides()
+		nuclides_names = self.get_all_nuclide_names()
+		num = len(all_nuclides)
+		mox = fuel.give_me_fuel("U", nuclides.constants.NATURAL_U235, num + 2)
+		mox *= self._scale
+		indices = dict(zip(nuclides_names, range(num)))
+		mox[indices["U235"]] *= (1 - mox_frac)
+		mox[indices["U238"]] *= (1 - mox_frac)
+		for nuc in all_nuclides:
+			if nuc.element in which_elements:
+				index = indices[nuc.name]
+				mox[index] = mox_frac*quantities[index]
+		return mox  # remember mox_frac is in atom fraction
+	
+	
 	def decay(self, quantities, nsteps, times):
 		ds = DataSet()
 		ds.add_nuclides(self.data.ALL_NUCLIDES, quantities[:-2])
