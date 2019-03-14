@@ -17,26 +17,62 @@ UNITS = {"second": 1,
 
 def _get_axis(ax):
 	if ax is None:
-		ax = plt.figure().add_subplot()
+		ax = plt.subplot()
 	return ax
 
 
 def _get_t_in_unit(tvals, unit):
 	basestr = "$t$ ({}s)"
-	if unit not in UNITS:
+	if isinstance(unit, tuple):
+		return tvals/unit[0], unit[1]
+	elif unit not in UNITS:
 		print("Invalid unit", unit)
 		return tvals, basestr.format("second")
 	return tvals/UNITS[unit], basestr.format(unit)
+
+
+def _get_plot_function(ax, plot_type):
+	plot_funcs = {"semilogy": ax.semilogy,
+	              "semilogx": ax.semilogx,
+	              "loglog"  : ax.loglog,
+	              "plot"    : ax.plot}
+	if plot_type not in plot_funcs:
+		print("Invalid plot type", plot_type)
+		return ax.plot
+	return plot_funcs[plot_type]
+
+
+def make_heavy_metal_plot(tvals, num, all_nuclides, ax=None, unit="day",
+                          plot_type="semilogy", deadend_actinides=False, fission_products=False):
+	ax = _get_axis(ax)
+	tvals, tstr = _get_t_in_unit(tvals, unit)
+	plot_f = _get_plot_function(ax, plot_type)
+	
+	numnorm = np.divide(num, num[:, 0].sum()/100)
+	for i, nuclide in enumerate(all_nuclides):
+		if not num[i].any():
+			continue
+		if i == 0:
+			plot_f(tvals, numnorm[i], color=UCOLOR, linewidth=2, label=nuclide.latex)
+		else:
+			plot_f(tvals, numnorm[i], label=nuclide.latex)
+	if deadend_actinides:
+		plot_f(tvals, numnorm[-2], ':', label="other")
+	if fission_products:
+		plot_f(tvals, numnorm[-1], ':', label="fission\nproducts")
+	ax.set_xlabel(tstr)
+	ax.grid(True, which="both", ls="-")
+	ax.set_xlim(tvals[0], tvals[-1])
+	ax.legend(fancybox=True, shadow=True, bbox_to_anchor=(1.0, 1.0))
+	ax.set_title("Actinide % of Initial Heavy Metal", fontweight="bold")
+	return ax
 
 
 def make_actinides_plot(tvals, num, all_nuclides, ax=None, unit="day",
                         plot_type="semilogy", deadend_actinides=False, fission_products=False):
 	ax = _get_axis(ax)
 	tvals, tstr = _get_t_in_unit(tvals, unit)
-	plot_f = {"semilogy": ax.semilogy,
-	          "semilogx": ax.semilogx,
-	          "loglog"  : ax.loglog,
-	          "plot"    : ax.plot}[plot_type]
+	plot_f = _get_plot_function(ax, plot_type)
 	# Actinides
 	for i, nuclide in enumerate(all_nuclides):
 		if not num[i].any():
