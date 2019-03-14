@@ -25,7 +25,7 @@ class Depleter:
 		assert spectrum in SPECTRA, \
 			"Spectrum must be one of: {}".format(tuple(SPECTRA.keys()))
 		self.data = SPECTRA[spectrum]
-		self._scale = mass*N_A/238*1E-24
+		self._scalar = mass*N_A/238*1E-24
 		self._last_dataset = None
 	
 	
@@ -37,7 +37,11 @@ class Depleter:
 		return [n.name for n in self.data.ALL_NUCLIDES]
 	
 	
-	def _deplete(self, nsteps, dt, ds, c0, fission_rate):
+	def scale(self, quantities):
+		return self._scalar*quantities/quantities.sum()
+	
+	
+	def _deplete(self, nsteps, dt, ds, c0, fission_rate, verbose):
 		m = ds.m
 		l = ds.l
 		kinfvals = sp.zeros(nsteps)
@@ -65,16 +69,17 @@ class Depleter:
 			fluxvals[k] = flux
 			kinfvals[k] = (ck*nufv).sum()/(ck*absv).sum()
 		
-		mass_reduct_238 = (concentrations[1, -1] - c0[1])/c0[1]
-		print("U238 mass change: {:5.2%}".format(mass_reduct_238))
-		mass_reduct_235 = (concentrations[0, -1] - c0[0])/c0[0]
-		print("U235 mass change: {:5.2%}".format(mass_reduct_235))
-		est235 = fuel.at_to_wt_uranium(enrichvals[-1])
-		print("Final enrichment estimate: {:5.2%}".format(est235))
+		if verbose:
+			mass_reduct_238 = (concentrations[1, -1] - c0[1])/c0[1]
+			print("U238 mass change: {:5.2%}".format(mass_reduct_238))
+			mass_reduct_235 = (concentrations[0, -1] - c0[0])/c0[0]
+			print("U235 mass change: {:5.2%}".format(mass_reduct_235))
+			est235 = fuel.at_to_wt_uranium(enrichvals[-1])
+			print("Final enrichment estimate: {:5.2%}".format(est235))
 		return concentrations, kinfvals, fluxvals, enrichvals
 
 	
-	def deplete_fresh(self, nsteps, plots=1):
+	def deplete_fresh(self, nsteps, plots=1, verbose=True):
 		power_megawatt = self.power*self.mass*1E-6
 		fission_rate = fuel.get_fission_rate(power_megawatt)
 		quantities = fuel.give_me_fuel(self.fuel_type, self.enrichment,
@@ -85,9 +90,9 @@ class Depleter:
 		ds = DataSet()
 		ds.add_nuclides(self.data.ALL_NUCLIDES, quantities)
 		ds.build()
-		c0 = ds.get_initial_quantities()*self._scale
+		c0 = self.scale(ds.get_initial_quantities())
 		
-		concs, kinf, flux, enrich = self._deplete(nsteps, dt, ds, c0, fission_rate)
+		concs, kinf, flux, enrich = self._deplete(nsteps, dt, ds, c0, fission_rate, verbose)
 		
 		if plots:
 			tvals = sp.arange(0, nsteps*dt, dt)
@@ -97,6 +102,24 @@ class Depleter:
 				axf = fig.add_subplot(222)
 				axk = fig.add_subplot(223)
 				axu = fig.add_subplot(224)
+			elif plots == 2:
+				# Spy plots
+				f = plt.figure()
+				# Left: absorption matrix
+				a = f.add_subplot(121)
+				a.spy(ds.m.T)
+				a.set_title("$[M]$\n")
+				# Right: decay matrix
+				b = f.add_subplot(122)
+				b.spy(ds.l.T)
+				b.set_title("$[L]$\n")
+				
+				#
+				plt.figure()
+				plotter.make_heavy_metal_plot(tvals, concs, self.data.ALL_NUCLIDES, ax=None,
+				                              deadend_actinides=True, fission_products=True,
+				                              unit=(self.mass/self.power, "Burnup (MW-d/kg-HM)"))
+				return
 			else:
 				axa = plt.figure().add_subplot(111)
 				axf = plt.figure().add_subplot(111)
@@ -128,15 +151,45 @@ class Depleter:
 		nuclides_names = self.get_all_nuclide_names()
 		num = len(all_nuclides)
 		mox = fuel.give_me_fuel("U", nuclides.constants.NATURAL_U235, num + 2)
-		mox *= self._scale
+		mox *= self._scalar
 		indices = dict(zip(nuclides_names, range(num)))
 		mox[indices["U235"]] *= (1 - mox_frac)
 		mox[indices["U238"]] *= (1 - mox_frac)
+		# New array with only the relevant nuclides.
+		qnew = sp.zeros(quantities.shape)
 		for nuc in all_nuclides:
-			if nuc.element in which_elements:
+			if nuc.element not in which_elements:
 				index = indices[nuc.name]
-				mox[index] = mox_frac*quantities[index]
+				qnew[index] = quantities[index]
+		mox += mox_frac*self.scale(qnew)
+		mox = self.scale(mox)
 		return mox  # remember mox_frac is in atom fraction
+	
+	
+	def reload(self, quantities, nsteps, plots=0, return_kinf=False, verbose=False):
+		if not self._last_dataset:
+			self._last_dataset = DataSet()
+			self._last_dataset.add_nuclides(self.get_all_nuclides(), quantities)
+			self._last_dataset.build()
+		ds = self._last_dataset
+		
+		power_megawatt = self.power*self.mass*1E-6
+		fission_rate = fuel.get_fission_rate(power_megawatt)
+		time = fuel.give_me_fire(self.power, self.max_burnup)
+		dt = time/nsteps
+		c0 = self.scale(quantities)
+		
+		concs, kinf, flux, enrich = self._deplete(nsteps, dt, ds, c0, fission_rate, verbose)
+		
+		# For optimization purposes
+		if return_kinf:
+			return kinf
+		
+		if plots:
+			print("reload plotting not implemented yet")
+		
+		return concs[:, -1]
+			
 	
 	
 	def decay(self, quantities, nsteps, times):
