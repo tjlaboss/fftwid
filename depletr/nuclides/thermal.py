@@ -42,10 +42,12 @@ ALL_NUCLIDES.append(pu239)
 pu240 = Nuclide('Pu', 240)
 pu240.sigma_f = 0.53
 pu240.sigma_y = 210.2
+#pu240.nu = 2.9
 ALL_NUCLIDES.append(pu240)
 pu241 = Nuclide('Pu', 241)
 pu241.sigma_f = 102.2
 pu241.sigma_y = 40.9
+#pu241.nu = 2.9
 ALL_NUCLIDES.append(pu241)
 pu242 = Nuclide('Pu', 242)
 pu242.sigma_f = 0.44
@@ -75,18 +77,22 @@ ALL_NUCLIDES.append(am243)
 cm242 = Nuclide('Cm', 242)
 cm242.sigma_f = 1.14
 cm242.sigma_y = 4.5
+#cm242.nu = 3.0
 ALL_NUCLIDES.append(cm242)
 cm243 = Nuclide('Cm', 243)
 cm243.sigma_f = 88
 cm243.sigma_y = 14
+#cm243.nu = 3.0
 ALL_NUCLIDES.append(cm243)
 cm244 = Nuclide('Cm', 244)
 cm244.sigma_f = 1.0
 cm244.sigma_y = 16
+#cm244.nu = 3.0
 ALL_NUCLIDES.append(cm244)
 cm245 = Nuclide('Cm', 245)
 cm245.sigma_f = 116
 cm245.sigma_y = 17
+#cm245.nu = 3.0
 ALL_NUCLIDES.append(cm245)
 
 for _nuclide in ALL_NUCLIDES:

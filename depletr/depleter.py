@@ -169,7 +169,7 @@ class Depleter:
 	def reload(self, quantities, nsteps, plots=0, return_kinf=False, verbose=False):
 		if not self._last_dataset:
 			self._last_dataset = DataSet()
-			self._last_dataset.add_nuclides(self.get_all_nuclides(), quantities)
+			self._last_dataset.add_nuclides(self.get_all_nuclides(), quantities)#[:-2])
 			self._last_dataset.build()
 		ds = self._last_dataset
 		
@@ -189,7 +189,9 @@ class Depleter:
 			print("reload plotting not implemented yet")
 		
 		return concs[:, -1]
-			
+	
+	
+	#def burn_to_atom_percent(self, quantities, dt, ):
 	
 	
 	def decay(self, quantities, nsteps, times):
