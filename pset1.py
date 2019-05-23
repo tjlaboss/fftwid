@@ -25,11 +25,13 @@ for spectrum in SPECTRA:
 	
 	study = depletr.Depleter(POWER, ENRICHMENT, max_burnup=BURNUP, spectrum=spectrum)
 	print(">Depleting to {} MW-d/kg-HM:".format(BURNUP))
-	spent_fuel = study.deplete(nsteps=1000, plots=PLOT)
+	spent_fuel = study.deplete_fresh(nsteps=1000, plots=PLOT)
 	print("\n>Decaying in spent fuel pool for {} years".format(int(DECAY_TIMES.max())))
 	times_in_seconds = DECAY_TIMES*depletr.nuclides.half_lives.YEAR
 	respository = study.decay(spent_fuel, nsteps=1000, times=times_in_seconds)
 	nuclide_names = study.get_all_nuclide_names()
+	# new
+	respository /= respository.sum()
 	depletr.printer.print_decay_results(nuclide_names, DECAY_TIMES, respository)
 	if PLOT:
 		study.show()
