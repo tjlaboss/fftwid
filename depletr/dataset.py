@@ -9,12 +9,30 @@ class DataSet:
 	def __init__(self):
 		self._nuclides = OrderedDict()
 		self._q = OrderedDict()  # quantities
-		self._size = None
 		self._built = False
+		# Variables set after building
+		self._size = None
+		self._m = None
+		self._l = None
+		self._rxn_vectors = {}
+	
+	def _check_built(self):
+		assert self._built, "You must build this DataSet first."
 	
 	@property
 	def size(self):
+		self._check_built()
 		return self._size
+	
+	@property
+	def m(self):
+		self._check_built()
+		return self._m
+	
+	@property
+	def l(self):
+		self._check_built()
+		return self._l
 	
 	def add_nuclide(self, nuc, q):
 		"""Add a nuclide to the set
@@ -39,7 +57,7 @@ class DataSet:
 		for nuc, q in zip(list_of_nuclides, list_of_quantities):
 			self.add_nuclide(nuc, q)
 		
-	def build_matrix(self):
+	def build(self):
 		indices = dict(zip(self._nuclides.keys(), range(len(self._nuclides))))
 		indices[nuclides.FISSION_PRODUCT] = -1
 		indices[nuclides.DEADEND_ACTINIDE] = -2
@@ -103,11 +121,10 @@ class DataSet:
 					j = indices[nuclides.DEADEND_ACTINIDE]
 				L[i, j] += -nuclide.lambda_gamma
 		
-		
 		self._built = True
 		self._size = n
-		return A, L
-	
+		self._m = A
+		self._l = L
 	
 	def get_initial_quantities(self):
 		if self._built:
@@ -118,9 +135,7 @@ class DataSet:
 			vals = tuple(self._q.values())
 			return sp.array(vals)
 	
-	
-	def build_xs_vector(self, rxn):
-		assert self._built, "You must finalize the depletion matrix first."
+	def _build_xs_vector(self, rxn):
 		vector = sp.zeros(self._size)
 		for i, nuclide in enumerate(self._nuclides.values()):
 			if rxn == "fission":
@@ -132,11 +147,16 @@ class DataSet:
 			elif rxn == "capture":
 				xs = nuclide.sigma_y
 			else:
-				raise NotImplementedError(xs)
+				raise NotImplementedError(rxn)
 			vector[i] = xs
 		# Leave deadend actinides and fission products at 0.
 		return vector
 	
+	def get_xs_vector(self, rxn):
+		self._check_built()
+		if rxn not in self._rxn_vectors:
+			self._rxn_vectors[rxn] = self._build_xs_vector(rxn)
+		return self._rxn_vectors[rxn]
 	
-	def build_fission_vector(self):
-		return self.build_xs_vector("fission")
+	def get_fission_vector(self):
+		return self.get_xs_vector("fission")

@@ -11,8 +11,8 @@ def _get_l_matrix():
 	decayset = depletr.DataSet()
 	decayset.add_nuclide(am242m, 1)
 	decayset.add_nuclide(am242, 0)
-	a, l = decayset.build_matrix()
-	return l
+	decayset.build()
+	return decayset.l
 
 
 def test_l_matrix_dimensions():

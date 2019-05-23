@@ -23,9 +23,9 @@ def test_matrix_half_life():
 	ds = depletr.DataSet()
 	ds.add_nuclide(u238, 0)
 	ds.add_nuclide(pu242, 1)
-	l = ds.build_matrix()[1]
+	ds.build()
 	q0 = ds.get_initial_quantities()
-	q1 = q0.dot(expm(-l*dt))
+	q1 = q0.dot(expm(-ds.l*dt))
 	test_result = (q1[0], q1[1])
 	true_result = (0.5,     0.5)
 	_assert("Pu242 matrix half-life", test_result, true_result)
