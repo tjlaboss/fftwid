@@ -158,7 +158,7 @@ class Depleter:
 		# New array with only the relevant nuclides.
 		qnew = sp.zeros(quantities.shape)
 		for nuc in all_nuclides:
-			if nuc.element not in which_elements:
+			if nuc.element in which_elements:
 				index = indices[nuc.name]
 				qnew[index] = quantities[index]
 		mox += mox_frac*self.scale(qnew)
